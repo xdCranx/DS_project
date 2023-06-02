@@ -12,7 +12,9 @@ using namespace std;
 int main() {
 
     Graph chuj("tsp.csv");
-    chuj.kruskalAlg();
+    // chuj.kruskalMST();
+    chuj.primMST();
+
 
 
     return 0;

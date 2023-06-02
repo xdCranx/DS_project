@@ -7,6 +7,7 @@
 #include <iostream>
 #include <sstream>
 #include <algorithm>
+#include <queue>
 
 #include "DisjointSet.hpp"
 
@@ -14,8 +15,14 @@ class Graph
 {
 
 private:
+    struct Edge
+    {
+        int source, destination, weight;
+
+    };
+
     std::vector<std::vector<int>> matrixGraph;
-    std::vector<std::vector<int>> edgeList;
+    std::vector<Edge> edgeList;
     int VERTICES;
 
 public:
@@ -66,36 +73,84 @@ public:
         return graph;
     };
 
-    void printEdges() {
+    void printEdges()
+    {
 
-        for (auto i : this -> edgeList)
+        for (auto i : this->edgeList)
         {
-            std::cout << i[0] << " " << i[1] << " " << i[2] << std::endl;
+            std::cout << i.weight << " " << i.source << " " << i.destination << std::endl;
         }
     };
 
-    void kruskalAlg() {
+    void kruskalMST()
+    {
 
         std::sort(edgeList.begin(), edgeList.end());
 
         DS set(VERTICES);
         int weight_sum = 0;
 
-        for(auto edge : edgeList) {
-            int weight = edge[0];
-            int source = edge[1];
-            int destination = edge[2];
+        for (auto edge : edgeList)
+        {
+            int weight = edge.weight;
+            int source = edge.source;
+            int destination = edge.destination;
 
-            if(set.find(source) != set.find(destination)) {
+            if (set.find(source) != set.find(destination))
+            {
                 set.unite(source, destination);
                 weight_sum += weight;
                 std::cout << "From: " << source << " To: " << destination << " | Weight: " << weight << std::endl;
-
             }
         }
         std::cout << "Cost: " << weight_sum << std::endl;
+    };
 
+    bool isValidEdge(int u, int v, std::vector<bool> inMST)
+    {
+        if (u == v)
+            return false;
+        if (inMST[u] == false && inMST[v] == false)
+                return false;
+        else if (inMST[u] == true && inMST[v] == true)
+                return false;
+        return true;
+    };
+    
 
+    void primMST()
+    { 
+        std::vector<bool> inMST(VERTICES, false);
+    
+        // Include first vertex in MST
+        inMST[0] = true;
+    
+        // Keep adding edges while number of included
+        // edges does not become V-1.
+        int edge_count = 0, mincost = 0;
+        while (edge_count < VERTICES - 1) {
+    
+            // Find minimum weight valid edge. 
+            int min = INT_MAX, a = -1, b = -1;
+            for (int i = 0; i < VERTICES; i++) {
+                for (int j = 0; j < VERTICES; j++) {              
+                    if (matrixGraph[i][j] < min) {
+                        if (isValidEdge(i, j, inMST)) {
+                            min = matrixGraph[i][j];
+                            a = i;
+                            b = j;
+                        }
+                    }
+                }
+            }
+            if (a != -1 && b != -1) {
+                printf("Edge %d:(%d, %d) cost: %d \n",
+                            edge_count++, a, b, min);
+                mincost = mincost + min;
+                inMST[b] = inMST[a] = true;
+            }
+        }
+        printf("\n Minimum cost= %d \n", mincost);
     };
 
 };
