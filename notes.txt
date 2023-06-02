@@ -1,0 +1,11 @@
+|TEMAT - ELEMENTY DO ANALIZY|
+
+|Minimalne drzewo rozpinające z użyciem algorytmu Prima
+
+Minimalne drzewo rozpinające z użyciem algorytmu Kruskala 
+
+- reprezentacja grafu, wykorzystane
+struktury danych|
+
+
+|Tablice mieszające - warianty tablic mieszających|
