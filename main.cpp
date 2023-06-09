@@ -11,9 +11,11 @@ using namespace std;
 
 int main() {
 
-    Graph chuj("tsp.csv");
+    Graph chuj("tsp.csv", 2);
+    chuj.printEdges();
     // chuj.kruskalMST();
-    chuj.primMST();
+    // chuj.primMST();
+    
 
 
 
