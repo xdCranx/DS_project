@@ -21,56 +21,28 @@ private:
         int source, destination, weight;
     };
 
-    std::vector<std::vector<int>> matrixGraph;
-    std::vector<Edge> edgeList;
-    std::vector<std::list<int>> listGraph;
+    bool mode;
     int VERTICES;
 
-public:
-    Graph(const std::string &filename, int co)
-    {
+    std::vector<std::vector<int>> matrixGraph;
+    std::vector<std::list<int>> listGraph;
 
+    std::vector<Edge> edgeList;
+
+public:
+    Graph(const std::string &filename, bool co)
+    {
         if (co == 1)
         {
             this->matrixGraph = loadGraphFromCSV(filename);
             this->VERTICES = matrixGraph.size();
-            // EDGE_LIST - {weight, source, destination}
-
-            for (int node = 0; node < this->matrixGraph.size(); node++)
-                for (int connection = 0; connection < this->matrixGraph[node].size(); connection++)
-                {
-                    
-                    if (matrixGraph[node][connection] == 0)
-                        continue;
-                    Edge EDGE;
-                    EDGE.source = node;
-                    EDGE.destination = connection;
-                    EDGE.weight = matrixGraph[node][connection];
-                    // edgeList.emplace_back(this->matrixGraph[node][connection], node, connection);
-                    edgeList.push_back(EDGE);
-                }
+            this->mode = co;
         }
-        if (co == 2)
+        if (co == 0)
         {
             this->listGraph = loadGraphToAlist(filename);
             this->VERTICES = listGraph.size();
-
-            for (int node = 1; node <= listGraph.size(); node++) 
-            {
-                int connection = 1;
-
-                for (auto weight : listGraph[node-1])
-                {
-                    if(node == connection) 
-                    {
-                        connection++;
-                        
-                    }
-                    edgeList.push_back({node, connection, weight});
-                    connection++;
-                    
-                }
-            }
+            this->mode = co;
         }
     };
     ~Graph(){};
@@ -143,7 +115,7 @@ public:
     void printEdges()
     {
 
-        for (auto i : this -> edgeList)
+        for (auto i : this->edgeList)
         {
             std::cout << i.weight << " " << i.source << " " << i.destination << std::endl;
         }
@@ -161,8 +133,39 @@ public:
 
     void kruskalMST()
     {
+        if (mode)
+        {
+            for (int node = 0; node < this->matrixGraph.size(); node++)
+                for (int connection = 0; connection < this->matrixGraph[node].size(); connection++)
+                {
+                    if (matrixGraph[node][connection] == 0)
+                        continue;
+                    int source = node;
+                    int destination = connection;
+                    int weight = matrixGraph[node][connection];
+                    edgeList.push_back({node, connection, weight});
+                }
+        }
+        if (!mode)
+        {
+            for (int node = 0; node < listGraph.size(); node++)
+            {
+                int connection = 0;
 
-        std::sort(edgeList.begin(), edgeList.end(), [](const Edge &edge1, const Edge &edge2){
+                for (auto weight : listGraph[node])
+                {
+                    if (node == connection)
+                    {
+                        connection++;
+                    }
+                    edgeList.push_back({node, connection, weight});
+                    connection++;
+                }
+            }
+        }
+
+        std::sort(edgeList.begin(), edgeList.end(), [](const Edge &edge1, const Edge &edge2)
+                  {
                                                         int result = 0;
                                                         if((edge2.weight > edge1.weight) || 
                                                         ((edge2.weight == edge1.weight) && 
@@ -170,8 +173,7 @@ public:
                                                         {
                                                             result = 1;
                                                         }
-                                                            return result;
-                                                        });
+                                                            return result; });
 
         DS set(VERTICES);
         int weight_sum = 0;
@@ -213,35 +215,74 @@ public:
         // Keep adding edges while number of included
         // edges does not become V-1.
         int edge_count = 0, mincost = 0;
-        while (edge_count < VERTICES - 1)
+        if (mode)
         {
-
-            // Find minimum weight valid edge.
-            int min = INT_MAX, a = -1, b = -1;
-            for (int i = 0; i < VERTICES; i++)
+            while (edge_count < VERTICES - 1)
             {
-                for (int j = 0; j < VERTICES; j++)
+
+                // Find minimum weight valid edge.
+                int min = INT_MAX, a = -1, b = -1;
+                for (int i = 0; i < VERTICES; i++)
                 {
-                    if (matrixGraph[i][j] < min)
+                    for (int j = 0; j < VERTICES; j++)
                     {
-                        if (isValidEdge(i, j, inMST))
+                        if (matrixGraph[i][j] < min)
                         {
-                            min = matrixGraph[i][j];
-                            a = i;
-                            b = j;
+                            if (isValidEdge(i, j, inMST))
+                            {
+                                min = matrixGraph[i][j];
+                                a = i;
+                                b = j;
+                            }
                         }
                     }
                 }
+                if (a != -1 && b != -1)
+                {
+                    std::cout << "Edge " << edge_count++ <<": (" 
+                    << a <<", "<< b << ") | Weight: " << min << std::endl;
+
+                    mincost = mincost + min;
+                    inMST[b] = inMST[a] = true;
+                }
             }
-            if (a != -1 && b != -1)
-            {
-                printf("Edge %d:(%d, %d) cost: %d \n",
-                       edge_count++, a, b, min);
-                mincost = mincost + min;
-                inMST[b] = inMST[a] = true;
-            }
+            printf("\n Minimum cost= %d \n", mincost);
         }
-        printf("\n Minimum cost= %d \n", mincost);
+        if (!mode)
+        {
+            while (edge_count < VERTICES - 1)
+            {
+                int min = INT_MAX, a = -1, b = -1;
+                for (int i = 0; i < VERTICES; i++)
+                {
+                    int connection = 0;
+                    for (auto j : listGraph[i])
+                    {
+                        if (i == connection)
+                            connection++;
+                        if (j < min)
+                        {
+                            if (isValidEdge(i, connection, inMST))
+                            {
+                                min = j;
+                                a = i;
+                                b = connection;
+                            }
+                        }
+                        connection++;
+                    }
+                }
+                if (a != -1 && b != -1)
+                {
+                    std::cout << "Edge " << edge_count++ <<": (" 
+                    << a <<", "<< b << ") | Weight: " << min << std::endl;
+                    
+                    mincost = mincost + min;
+                    inMST[b] = inMST[a] = true;
+                }
+            }
+            printf("\n Minimum cost= %d \n", mincost);
+        }
     };
 };
 
