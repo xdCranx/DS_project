@@ -10,22 +10,17 @@
 #include <queue>
 
 #include "DisjointSet.hpp"
-
 class Graph
 {
 
 private:
-    struct Edge
-    {
-        int source, destination, weight;
-
-    };
 
     std::vector<std::vector<int>> matrixGraph;
-    std::vector<Edge> edgeList;
+    std::vector<std::vector<int>> edgeList;
     int VERTICES;
 
 public:
+
     Graph(const std::string &filename)
     {
         this->matrixGraph = loadGraphFromCSV(filename);
@@ -78,7 +73,7 @@ public:
 
         for (auto i : this->edgeList)
         {
-            std::cout << i.weight << " " << i.source << " " << i.destination << std::endl;
+            std::cout << i[0] << " " << i[1] << " " << i[2] << std::endl;
         }
     };
 
@@ -92,9 +87,9 @@ public:
 
         for (auto edge : edgeList)
         {
-            int weight = edge.weight;
-            int source = edge.source;
-            int destination = edge.destination;
+            int weight = edge[0];
+            int source = edge[1];
+            int destination = edge[2];
 
             if (set.find(source) != set.find(destination))
             {
@@ -117,7 +112,6 @@ public:
         return true;
     };
     
-
     void primMST()
     { 
         std::vector<bool> inMST(VERTICES, false);
@@ -133,7 +127,7 @@ public:
             // Find minimum weight valid edge. 
             int min = INT_MAX, a = -1, b = -1;
             for (int i = 0; i < VERTICES; i++) {
-                for (int j = 0; j < VERTICES; j++) {              
+                for (int j = 0; j < VERTICES; j++) {
                     if (matrixGraph[i][j] < min) {
                         if (isValidEdge(i, j, inMST)) {
                             min = matrixGraph[i][j];
@@ -150,7 +144,7 @@ public:
                 inMST[b] = inMST[a] = true;
             }
         }
-        printf("\n Minimum cost= %d \n", mincost);
+        printf("\nMinimum cost= %d \n", mincost);
     };
 
 };
