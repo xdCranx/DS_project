@@ -7,17 +7,16 @@
 
 using namespace std;
 
-class HashTableOA 
+class HashTableOA
 {
 private:
-    //noe - .size()
-    //size - .capacity()
+    int noe;
+    int size;          //- .capacity()
     float load_factor; // noe/size
     typedef pair<int, string> student;
-    vector<student>* table = new vector<student>;
+    vector<student *> table;
 
 public:
-
     void getSize()
     {
         cout << table.capacity() << endl;
@@ -25,79 +24,95 @@ public:
 
     HashTableOA()
     {
+        size = 50;
+        noe = 0;
         load_factor = 0;
+
+        vector<student *> table1(size, nullptr);
+        this->table = table1;
     };
 
-    ~HashTableOA(){
-        delete[] table;
-        cout << "\nSpace freed";
+    ~HashTableOA()
+    {
+        // delete[] table;
+        // cout << "\nSpace freed";
     }
 
-    int hashFunc(int index) 
+    int hashFunc(int sindex)
     {
-        return index%size;
+        return sindex % size;
     };
 
-    void add(int index, string name)
+    void re_hash()
     {
-        student temp;
-        // cout << "Index: ";
-        // cin >> temp -> first;
-        // cout << "\nName: ";
-        // cin >> temp -> second;
-        // cout <<"\n";
+        size += int((noe / 0.6) + 1);
+        vector<student *> temp(size);
 
-        temp -> first = index;
-        temp -> second = name;
+        for (auto i : table)
+        {
+            if (i != nullptr)
+                temp[hashFunc(i->first)] = i;
+        }
 
-        insert(temp);
+        table = temp;
+        cout << "\nRehashed\n";
+    };
+
+    void add(int sindex, string name)
+    {
+        student *temp = new student;
+        temp->first = sindex;
+        temp->second = name;
+
+        int index = hashFunc(temp->first);
+        insert(temp, index);
     }
 
-    void insert(student stu)
+    void insert(student *stu, int index)
     {
-        int index = hashFunc(stu->first);
 
-        if(table[index] == )
+        if (table[index] == nullptr)
         {
             table[index] = stu;
             noe++;
-        }
-        else 
-        {
-            int i = index+1;
-            int temp_size = size;
-            for(; i < temp_size; i++)
-            {
-                if(table[i] == nullptr)
-                    table[i] = stu;
-                else if(i==size-1) {
-                    size++;
-                    table[i+1] = stu;
-                }
-            }
-            
-        }
+            load_factor = noe / size;
 
-        load_factor = noe / size;
-        if(load_factor > 0.75)
-            size+= int((noe/0.6)+1);
+            if (load_factor > 0.75)
+                re_hash();
+        }
+        else
+        {
+            if (table[index]->first == stu->first)
+                table[index] = stu;
+            else
+            {
+                index++;
+                if (index >= size)
+                    table.resize(size++);
+
+                insert(stu, index);
+            }
+        }
     };
 
     void show()
     {
-        for(int i = 0; i < size; i++)
-            cout << "Index: " << table[i]->first << " Student: " << table[i]->second << endl;
+        for (int i = 0; i < size; i++)
+            if (table[i] != nullptr)
+                cout << i << " | "
+                     << "Index: " << table[i]->first << " Student: " << table[i]->second << endl;
     };
 
-    void search() 
+    void search()
     {
         int sindex;
         cout << "Search for? : [index]" << endl;
         cin >> sindex;
 
         int index = hashFunc(sindex);
-        for(;table[index]->first!=sindex;index++);
-        cout << "Index: " << table[index]->first << " Name: " << table[index] -> second << endl;
+        for (; table[index]->first != sindex; index++)
+            ;
+        cout << "Index: " << table[index]->first << " Name: " << table[index]->second << endl;
     }
 };
 

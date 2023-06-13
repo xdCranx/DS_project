@@ -116,7 +116,7 @@ public:
 
         for (auto i : this->edgeList)
         {
-            std::cout << i[0] << " " << i[1] << " " << i[2] << std::endl;
+            std::cout << i.weight << " " << i.source << " " << i.destination << std::endl;
         }
     };
 
