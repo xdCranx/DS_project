@@ -133,8 +133,11 @@ public:
     {
         if (mode)
         {
+            int con = -1;
             for (int node = 0; node < this->matrixGraph.size(); node++)
-                for (int connection = 0; connection < this->matrixGraph[node].size(); connection++)
+            {
+                con++;
+                for (int connection = con; connection < this->matrixGraph[node].size(); connection++)
                 {
                     if (matrixGraph[node][connection] == 0)
                         continue;
@@ -143,6 +146,7 @@ public:
                     int weight = matrixGraph[node][connection];
                     edgeList.push_back({node, connection, weight});
                 }
+            }
         }
         if (!mode)
         {
