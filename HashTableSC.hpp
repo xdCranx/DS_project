@@ -1,5 +1,5 @@
-#ifndef HASHTABLE_HPP
-#define HASHTABLE_HPP
+#ifndef HASHTABLESC_HPP
+#define HASHTABLESC_HPP
 
 #include <iostream>
 #include <list>
@@ -10,9 +10,9 @@
 // using namespace std::chrono;
 using namespace std;
 
-class HashTable {
+class HashTableSC {
     private:
-        static const int ht_size = 10;
+        static const int ht_size = 50;
         list<pair<int, string>> table[ht_size];
         
 
@@ -20,13 +20,13 @@ class HashTable {
         bool is_empty();
         void print_isempty();
         int hash_func(int index);
-        void add_element(int index, string student);
+        void add(int index, string student);
         void remove_element(int index);
         void show();
         void search(int index);
 };
 
-bool HashTable::is_empty() {
+bool HashTableSC::is_empty() {
     for(int i = 0 ; i < ht_size ; i++)
     {
         if(table[i].size()!=0)
@@ -37,18 +37,18 @@ bool HashTable::is_empty() {
     return false;
 }
 
-void HashTable::print_isempty() {
+void HashTableSC::print_isempty() {
     if(is_empty()) {
-        cout<<"HashTable contains elements"<<endl;
+        cout<<"HashTableSC contains elements"<<endl;
         cout<<endl;
     }
     else {
-        cout<<"HashTable is empty"<<endl;
+        cout<<"HashTableSC is empty"<<endl;
         cout<<endl;
     }
 }
 
-// int HashTable::hash_func(int index) {
+// int HashTableSC::hash_func(int index) {
 //     int sum = 0;
 //     int num = index;
 //     for(int i = 0; i < 6; i++) {
@@ -63,12 +63,11 @@ void HashTable::print_isempty() {
 // }
 
 
-int HashTable::hash_func(int index) {
+int HashTableSC::hash_func(int index) {
     return index%ht_size;
 }
 
-
-void HashTable::add_element(int index, string student) {
+void HashTableSC::add(int index, string student) {
     int Hash = hash_func(index);
     auto& indeks = table[Hash];
     auto iterator = begin(indeks);
@@ -87,7 +86,7 @@ void HashTable::add_element(int index, string student) {
     return;
 }
 
-void HashTable::remove_element(int index) {
+void HashTableSC::remove_element(int index) {
     int Hash = hash_func(index);
     auto& indeks = table[Hash];
     auto iterator = begin(indeks);
@@ -101,7 +100,7 @@ void HashTable::remove_element(int index) {
     return;
 }
 
-void HashTable::show() {
+void HashTableSC::show() {
     for(int i=0; i<ht_size; i++) {
         if(table[i].size() == 0) continue;
 
@@ -115,14 +114,14 @@ void HashTable::show() {
     }
 }
 
-void HashTable::search(int index) {
+void HashTableSC::search(int index) {
     auto start = chrono::high_resolution_clock::now();
     int Hash = hash_func(index);
     auto& indeks = table[Hash];
     auto iterator = begin(indeks);
     for(; iterator != end(indeks); iterator++) {
         if(iterator->first == index) {
-            cout<<"Podany numer albumu "<<iterator->first<<" jest przypisany do: "<<iterator->second<<endl;
+            cout<<"Index: "<<iterator->first<<" Name: "<<iterator->second<<endl;
             break;
         } 
         else {
@@ -134,7 +133,7 @@ void HashTable::search(int index) {
 
     auto stop = chrono::high_resolution_clock::now();
     auto duration = chrono::duration_cast<chrono::microseconds>(stop - start);
-    cout << "[Czas wykonania funkcji: "<< duration.count() << " mikrosekund]" << endl;
+    cout << "(Time: "<< duration.count() << " microsecs)" << endl;
     return;
 }
 

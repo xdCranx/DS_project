@@ -29,24 +29,24 @@ private:
     std::vector<Edge> edgeList;
 
 public:
-    Graph(const std::string &filename, bool co)
+    Graph(const std::string &filename, bool mode)
     {
-        if (co == 1)
+        if (mode == 1)
         {
-            this->matrixGraph = loadGraphFromCSV(filename);
+            this->matrixGraph = loadGraphToMatrix(filename);
             this->VERTICES = matrixGraph.size();
-            this->mode = co;
+            this->mode = mode;
         }
-        if (co == 0)
+        if (mode == 0)
         {
             this->listGraph = loadGraphToAlist(filename);
             this->VERTICES = listGraph.size();
-            this->mode = co;
+            this->mode = mode;
         }
     };
     ~Graph(){};
 
-    std::vector<std::vector<int>> loadGraphFromCSV(const std::string &filename)
+    std::vector<std::vector<int>> loadGraphToMatrix(const std::string &filename)
     {
         std::ifstream file(filename);
         std::vector<std::vector<int>> graph;
@@ -113,7 +113,6 @@ public:
 
     void printEdges()
     {
-
         for (auto i : this->edgeList)
         {
             std::cout << i.weight << " " << i.source << " " << i.destination << std::endl;
@@ -208,18 +207,13 @@ public:
     {
         std::vector<bool> inMST(VERTICES, false);
 
-        // Include first vertex in MST
         inMST[0] = true;
 
-        // Keep adding edges while number of included
-        // edges does not become V-1.
         int edge_count = 0, mincost = 0;
         if (mode)
         {
             while (edge_count < VERTICES - 1)
             {
-
-                // Find minimum weight valid edge.
                 int min = INT_MAX, a = -1, b = -1;
                 for (int i = 0; i < VERTICES; i++)
                 {

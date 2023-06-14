@@ -4,6 +4,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <chrono>
 
 using namespace std;
 
@@ -103,17 +104,19 @@ public:
                      << "Index: " << table[i]->first << " Student: " << table[i]->second << endl;
     };
 
-    void search()
+    void search(int sindex)
     {
-        int sindex;
-        cout << "Search for? : [index]" << endl;
-        cin >> sindex;
-
+        auto start = chrono::high_resolution_clock::now();
         int index = hashFunc(sindex);
-        for (; table[index]->first != sindex; index++)
-            ;
+
+        for (; table[index]->first != sindex; index++);
         cout << "Index: " << table[index]->first << " Name: " << table[index]->second << endl;
-    }
+
+        auto stop = chrono::high_resolution_clock::now();
+        auto duration = chrono::duration_cast<chrono::microseconds>(stop - start);
+        cout << "(Time: "<< duration.count() << " mikrosecs)" << endl;
+        
+    };
 };
 
 #endif
